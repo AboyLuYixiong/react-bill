@@ -3,16 +3,16 @@ import { useEffect } from "react"
 import { Outlet } from "react-router-dom"
 import { useDispatch } from 'react-redux'
 import { getBillList } from "@/store/modules/billStore"
-import './index.scss'
 import {
   BillOutline,
   CalculatorOutline,
   AddCircleOutline
 } from 'antd-mobile-icons'
+import './index.scss'
 
 const tabs = [
   {
-    key: '/month',
+    key: '/',
     title: '月度账单',
     icon: <BillOutline />,
   },
@@ -33,6 +33,7 @@ const Layout = () => {
   useEffect(() => {
     dispatch(getBillList())
   }, [dispatch])
+
   return (
     <div className="layout">
       <div className="container">
