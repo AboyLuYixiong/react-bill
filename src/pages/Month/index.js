@@ -10,7 +10,6 @@ const Month = () => {
 
   // 控制时间显示
   const [currentDate, setCurrentDate] = useState(() => {
-    return dayjs(new Date()).format('YYYY-MM')
   })
 
   const onConfirm = (date) => {
