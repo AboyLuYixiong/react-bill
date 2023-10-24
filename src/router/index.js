@@ -1,10 +1,10 @@
 // 创建路由实例 绑定path element
+import { createBrowserRouter } from "react-router-dom"
 
 import Layout from "@/pages/Layout"
 import Month from "@/pages/Month"
 import Year from "@/pages/Year"
 import New from "@/pages/New"
-import { createBrowserRouter } from "react-router-dom"
 
 const router = createBrowserRouter([
   {
@@ -13,6 +13,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'month',
+        // index: true,
         element: <Month />
       },
       {
