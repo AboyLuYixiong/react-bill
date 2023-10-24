@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { useSelector } from 'react-redux'
 import _ from 'lodash'
 
+import DailyBill from './components/DayBill'
 import './index.scss'
 
 const Month = () => {
@@ -14,11 +15,10 @@ const Month = () => {
     // return出去计算之后的值
     return _.groupBy(billList, (item) => dayjs(item.date).format('YYYY-MM'))
   }, [billList])
-
   console.log(monthGroup);
 
   // 控制弹框的打开和关闭
-  const [dataVisible, setDataVisible] = useState(false)
+  const [dateVisible, setDateVisible] = useState(false)
 
   // 控制时间显示
   const [currentDate, setCurrentDate] = useState(() => {
@@ -30,7 +30,7 @@ const Month = () => {
   const monthResult = useMemo(() => {
     // 支出 / 收入 / 结余
     const pay = currentMonthList.filter(item => item.type === 'pay').reduce((a, c) => a + c.money, 0)
-    const income = currentMonthList.filter(item => item.type === 'pay').reduce((a, c) => a + c.money, 0)
+    const income = currentMonthList.filter(item => item.type === 'income').reduce((a, c) => a + c.money, 0)
     return {
       pay,
       income,
@@ -49,7 +49,7 @@ const Month = () => {
 
   // 确认回调
   const onConfirm = (date) => {
-    setDataVisible(false)
+    setDateVisible(false)
     // 其他逻辑
     console.log(date);
     const formatDate = dayjs(date).format('YYYY-MM')
@@ -57,6 +57,17 @@ const Month = () => {
     setMonthList(monthGroup[formatDate])
     setCurrentDate(formatDate)
   }
+
+  // 当前月按照日来做分组
+  const dayGroup = useMemo(() => {
+    // return出去计算之后的值
+    const groupData = _.groupBy(currentMonthList, (item) => dayjs(item.date).format('YYYY-MM-DD'))
+    const keys = Object.keys(groupData)
+    return {
+      groupData,
+      keys
+    }
+  }, [currentMonthList])
 
   return (
     <div className="monthlyBill">
@@ -66,12 +77,12 @@ const Month = () => {
       <div className="content">
         <div className="header">
           {/* 时间切换区域 */}
-          <div className="date" onClick={() => setDataVisible(true)}>
+          <div className="date" onClick={() => setDateVisible(true)}>
             <span className="text">
               {currentDate + ''}月账单
             </span>
             {/* 思路：根据当前弹框打开的状态控制expand类名是否存在 */}
-            <span className={classNames('arrow', dataVisible && 'expand')}></span>
+            <span className={classNames('arrow', dateVisible && 'expand')}></span>
           </div>
           {/* 统计区域 */}
           <div className='twoLineOverview'>
@@ -93,13 +104,19 @@ const Month = () => {
             className="kaDate"
             title="记账日期"
             precision="month"
-            visible={dataVisible}
-            onCancel={() => setDataVisible(false)}
+            visible={dateVisible}
+            onCancel={() => setDateVisible(false)}
             onConfirm={onConfirm}
-            onClose={() => setDataVisible(false)}
+            onClose={() => setDateVisible(false)}
             max={new Date()}
           />
         </div>
+        {/* 单日列表统计 */}
+        {
+          dayGroup.keys.map(key => {
+            return <DailyBill key={key} date={key} billList={dayGroup.groupData[key]} />
+          })
+        }
       </div>
     </div>
   )
